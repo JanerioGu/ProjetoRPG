@@ -74,29 +74,24 @@ class CriacaoPersonagem {
         val pontosDisponiveis = listOf(15, 14, 13, 12, 10, 8).toMutableList()
         val atributosNome = listOf("Força", "Destreza", "Constituição", "Inteligência", "Sabedoria", "Carisma")
 
-        val pontosDistribuidos = mutableMapOf(
-            "forca" to 0,
-            "destreza" to 0,
-            "constituicao" to 0,
-            "inteligencia" to 0,
-            "sabedoria" to 0,
-            "carisma" to 0
-        )
-
+        // Laço para distribuir os pontos para cada atributo
         for (atributo in atributosNome) {
             while (true) {
                 println("Escolha um valor para $atributo dos disponíveis: $pontosDisponiveis")
                 val escolha = readLine()?.toIntOrNull()
 
+                // Verifica se o valor é válido e está disponível na lista
                 if (escolha != null && pontosDisponiveis.contains(escolha)) {
                     pontosDisponiveis.remove(escolha)
+
+                    // Atribui o valor escolhido diretamente ao atributo correspondente
                     when (atributo) {
-                        "Força" -> pontosDistribuidos["forca"] = escolha
-                        "Destreza" -> pontosDistribuidos["destreza"] = escolha
-                        "Constituição" -> pontosDistribuidos["constituicao"] = escolha
-                        "Inteligência" -> pontosDistribuidos["inteligencia"] = escolha
-                        "Sabedoria" -> pontosDistribuidos["sabedoria"] = escolha
-                        "Carisma" -> pontosDistribuidos["carisma"] = escolha
+                        "Força" -> atributos.forca = escolha
+                        "Destreza" -> atributos.destreza = escolha
+                        "Constituição" -> atributos.constituicao = escolha
+                        "Inteligência" -> atributos.inteligencia = escolha
+                        "Sabedoria" -> atributos.sabedoria = escolha
+                        "Carisma" -> atributos.carisma = escolha
                     }
                     break
                 } else {
@@ -104,13 +99,6 @@ class CriacaoPersonagem {
                 }
             }
         }
-
-        atributos.forca += pontosDistribuidos["forca"]!!
-        atributos.destreza += pontosDistribuidos["destreza"]!!
-        atributos.constituicao += pontosDistribuidos["constituicao"]!!
-        atributos.inteligencia += pontosDistribuidos["inteligencia"]!!
-        atributos.sabedoria += pontosDistribuidos["sabedoria"]!!
-        atributos.carisma += pontosDistribuidos["carisma"]!!
     }
 
     fun mostrarAtributos(atributos: Atributos, atributosModificadores: AtributosModificadores) {
@@ -130,19 +118,42 @@ class CriacaoPersonagem {
         println("Carisma: $totalCarisma")
     }
 
+
+    fun vida() {
+        val vidaBase = 10
+
+        // Calcula o valor total de Constituição (após aplicar bônus racial e pontos distribuídos)
+        val constituicaoFinal = atributos.constituicao + atributosModificadores.constituicao
+
+        // Recalcula o modificador de Constituição com base no valor total de Constituição
+        val modificadorConstituicao = atributosModificadores.calcularModificador(constituicaoFinal)
+
+        // Calcula a vida total usando a vida base e o modificador de Constituição
+        val vidaTotal = vidaBase + modificadorConstituicao
+
+        println("Vida Total: $vidaTotal")
+    }
+
+
+
+
+
     private fun executarAcoes() {
         val acoes = AcoesPersonagem(this)
         while (true) {
             println("\nVocê deseja realizar alguma ação?" +
                     "\n1 - Atacar" +
-                    "\n2 - Sair")
+                    "\n2 - Exibir Vida" +
+                    "\n3 - Sair")
             val escolha = readLine()
             when (escolha) {
                 "1" -> acoes.atacar()
-                "2" -> {
+                "2" -> vida()
+                "3" -> {
                     println("Você encerrou suas ações.")
                     break
                 }
+
                 else -> println("Escolha inválida. Tente novamente.")
             }
         }
